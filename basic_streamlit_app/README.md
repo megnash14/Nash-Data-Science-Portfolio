@@ -1,1 +1,1 @@
-## Describing the app
+# For my basic streamlit app, I chose to explore the world happiness scores dataset. I believed that the numerical data would be a good way to showcase sorting and the qualitative data would be a good way to showcase filtering. I downloaded the data, reordered the columns and deleted columns I did not want to include.
