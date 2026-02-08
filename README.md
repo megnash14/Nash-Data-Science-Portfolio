@@ -1,3 +1,5 @@
-#Nash-Data-Science-Portfolio
+# Nash-Data-Science-Portfolio
 
-#Megan Nash
+# Megan Nash
+
+# My semester portfolio includes my updates GitHub profile 
