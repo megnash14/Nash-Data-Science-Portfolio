@@ -1,9 +1,9 @@
 # Machine Learning Playground App
 
 ## Project Overview
-This project is an interactive machine learning application built using Python and Streamlit. It allows users to upload their own dataset, select a supervised learning model, tune hyperparameters, and evaluate model performance in real time.
+This project is an application built using Streamlit. It allows users to upload their own dataset, select a supervised learning model, tune hyperparameters, and evaluate live model performance.
 
-The purpose of this project is to demonstrate applied machine learning concepts while creating an intuitive interface that enables users to explore how model choices and parameter adjustments impact results.
+The purpose of this project is to demonstrate applied machine learning concepts while creating an  app that enables users to explore how model choices and parameters impact results.
 
 ## Live App
 http://localhost:8501
@@ -49,7 +49,7 @@ The app supports multiple supervised learning models:
 ## Installation and Running Locally
 
 ### 1. Clone the repository
-git clone https://github.com/yourusername/MLStreamlitApp.git
+git clone https://github.com/megnash14/MLStreamlitApp.git
 cd MLStreamlitApp
 
 ### 2. Install dependencies

@@ -14,7 +14,7 @@ st.set_page_config(
     page_title="ML Playground",
     layout="wide"
 )
-# APP TITLE and DESCRIPTION
+# APP TITLE and DESCRIPTION on front page
 st.title("Machine Learning Playground")
 st.markdown("""
 Welcome! Upload your dataset, choose a model, and experiment with hyperparameters  
@@ -23,12 +23,12 @@ to see how they impact performance.
 This app is designed to make machine learning interactive and intuitive.
 """)
 
-# SIDEBAR (User Controls Live Here)
+# SIDEBAR (User Controls Live Here depending on dataset selection)
 st.sidebar.header("Controls")
 
 uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 
-# MAIN APP LOGIC
+# MAIN APP LOGIC for Dataset Results
 
 if uploaded_file:
     
@@ -45,34 +45,30 @@ if uploaded_file:
     X = df.drop(columns=[target])
     y = df[target]
 
-    # TRAIN / TEST SPLIT
+    # TRAIN / TEST SPLIT DATA
     test_size = st.sidebar.slider("Test Size", 0.1, 0.5, 0.2)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=42
     )
 
-    # -------------------------------
     # MODEL SELECTION
-    # -------------------------------
     model_choice = st.sidebar.selectbox(
         "Choose Model",
         ["Logistic Regression", "KNN", "Decision Tree"]
     )
 
-    # -------------------------------
     # HYPERPARAMETERS (Change based on model)
-    # -------------------------------
     if model_choice == "Logistic Regression":
         st.sidebar.markdown("### Logistic Regression Settings")
         C = st.sidebar.slider("Regularization (C)", 0.01, 10.0, 1.0)
         model = LogisticRegression(C=C, max_iter=1000)
-
+    # K Nearest Neighbors
     elif model_choice == "KNN":
         st.sidebar.markdown("### KNN Settings")
         k = st.sidebar.slider("Number of Neighbors", 1, 15, 5)
         model = KNeighborsClassifier(n_neighbors=k)
-
+    #Decision tree
     elif model_choice == "Decision Tree":
         st.sidebar.markdown("### Decision Tree Settings")
         depth = st.sidebar.slider("Max Depth", 1, 20, 5)
@@ -85,10 +81,9 @@ if uploaded_file:
         model.fit(X_train, y_train)
         predictions = model.predict(X_test)
 
-        # RESULTS DISPLAY (Columns Layout)
-        # -------------------------------
+        # RESULTS DISPLAY decides Columns Layout
         col1, col2 = st.columns(2)
-
+        # Live Metrics
         with col1:
             st.subheader("Model Performance")
 
