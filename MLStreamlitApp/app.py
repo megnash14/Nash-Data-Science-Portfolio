@@ -9,17 +9,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-# -------------------------------
-# PAGE CONFIG (Sets layout + title in browser tab)
-# -------------------------------
+# PAGE CONFIG (builds layout and title in browser tab)
 st.set_page_config(
     page_title="ML Playground",
     layout="wide"
 )
-
-# -------------------------------
-# APP TITLE + DESCRIPTION
-# -------------------------------
+# APP TITLE and DESCRIPTION
 st.title("Machine Learning Playground")
 st.markdown("""
 Welcome! Upload your dataset, choose a model, and experiment with hyperparameters  
@@ -28,16 +23,13 @@ to see how they impact performance.
 This app is designed to make machine learning interactive and intuitive.
 """)
 
-# -------------------------------
 # SIDEBAR (User Controls Live Here)
-# -------------------------------
 st.sidebar.header("Controls")
 
 uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 
-# -------------------------------
 # MAIN APP LOGIC
-# -------------------------------
+
 if uploaded_file:
     
     # Load dataset
@@ -47,17 +39,13 @@ if uploaded_file:
     st.subheader("Dataset Preview")
     st.dataframe(df.head())
 
-    # -------------------------------
     # TARGET SELECTION
-    # -------------------------------
     target = st.sidebar.selectbox("Select Target Column", df.columns)
 
     X = df.drop(columns=[target])
     y = df[target]
 
-    # -------------------------------
     # TRAIN / TEST SPLIT
-    # -------------------------------
     test_size = st.sidebar.slider("Test Size", 0.1, 0.5, 0.2)
 
     X_train, X_test, y_train, y_test = train_test_split(
@@ -90,16 +78,13 @@ if uploaded_file:
         depth = st.sidebar.slider("Max Depth", 1, 20, 5)
         model = DecisionTreeClassifier(max_depth=depth)
 
-    # -------------------------------
     # TRAIN MODEL BUTTON
-    # -------------------------------
     if st.sidebar.button("Train Model"):
         
         # Train model
         model.fit(X_train, y_train)
         predictions = model.predict(X_test)
 
-        # -------------------------------
         # RESULTS DISPLAY (Columns Layout)
         # -------------------------------
         col1, col2 = st.columns(2)
@@ -116,13 +101,9 @@ if uploaded_file:
             st.write(f"Training Size: {len(X_train)}")
             st.write(f"Test Size: {len(X_test)}")
 
-        # -------------------------------
         # SUCCESS MESSAGE
-        # -------------------------------
         st.success("Model trained successfully!")
 
-# -------------------------------
 # DEFAULT MESSAGE (Before Upload)
-# -------------------------------
 else:
     st.info("Upload a CSV file from the sidebar to get started!")

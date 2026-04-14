@@ -5,12 +5,8 @@ This project is an interactive machine learning application built using Python a
 
 The purpose of this project is to demonstrate applied machine learning concepts while creating an intuitive interface that enables users to explore how model choices and parameter adjustments impact results.
 
----
-
 ## Live App
-[Insert Streamlit Cloud Link Here]
-
----
+http://localhost:8501
 
 ## Key Features
 
@@ -41,8 +37,6 @@ The app supports multiple supervised learning models:
 - Organized sections for clarity and usability
 - Responsive column layout for presenting outputs
 
----
-
 ## How It Works
 
 1. Upload a dataset using the sidebar
@@ -52,11 +46,18 @@ The app supports multiple supervised learning models:
 5. Click "Train Model"
 6. View model performance and summary outputs
 
----
-
 ## Installation and Running Locally
 
 ### 1. Clone the repository
-```bash
 git clone https://github.com/yourusername/MLStreamlitApp.git
 cd MLStreamlitApp
+
+### 2. Install dependencies
+pip install -r requirements.txt
+
+### 3. Run the application
+streamlit run app.py
+
+### 4. Open in browser
+Navigate to:
+http://localhost:8501
