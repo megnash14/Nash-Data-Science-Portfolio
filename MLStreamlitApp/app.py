@@ -37,19 +37,27 @@ Using **World Happiness Report** as the default dataset.
 st.sidebar.header("Settings")
 uploaded_file = st.sidebar.file_uploader("Upload your own CSV", type=["csv"])
 
-DEFAULT_FILE = 'world_happiness.csv'
+# This finds the exact folder where app.py lives
+base_path = os.path.dirname(os.path.abspath(__file__))
+
+# This creates the full path to the CSV file
+DEFAULT_FILE = os.path.join(base_path, "world_happiness.csv")
+
 raw_data = None
 
+# Data Loading Logic
 if uploaded_file is not None:
     raw_data = pd.read_csv(uploaded_file)
     st.sidebar.success("Using uploaded file")
 elif os.path.exists(DEFAULT_FILE):
     raw_data = pd.read_csv(DEFAULT_FILE)
-    st.sidebar.info(f"Using default: {DEFAULT_FILE}")
+    st.sidebar.info("Using default: World Happiness dataset")
 else:
-    st.sidebar.warning("No default file found. Please upload a CSV.")
+    # If it fails, this will show us exactly why in the app
+    st.sidebar.error(f"⚠️ File not found at: {DEFAULT_FILE}")
+    st.sidebar.write("Files Python sees in this folder:", os.listdir(base_path))
 
-# 5. This is the Machine Learning Engine that only runs for data uploaded
+# 5. This is the Machine Learning Engine that only runs for data uploaded or default data
 if raw_data is not None:
     target_column = st.sidebar.selectbox("Select Target (Label)", raw_data.columns)
     
