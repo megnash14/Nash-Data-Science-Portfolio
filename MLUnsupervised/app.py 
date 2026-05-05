@@ -1,0 +1,99 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+from scipy.cluster.hierarchy import dendrogram, linkage
+import matplotlib.pyplot as plt
+
+st.title("Unsupervised Machine Learning Explorer")
+
+# Upload dataset
+uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    st.write("Dataset Preview:")
+    st.dataframe(df.head())
+
+    # Select numeric columns only
+    numeric_df = df.select_dtypes(include=np.number)
+
+    if numeric_df.shape[1] < 2:
+        st.warning("Need at least 2 numeric columns")
+    else:
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(numeric_df)
+
+        model_choice = st.selectbox(
+            "Choose a Model",
+            ["K-Means", "Hierarchical Clustering", "PCA"]
+        )
+
+        # -----------------------
+        # K-MEANS
+        # -----------------------
+        if model_choice == "K-Means":
+            k = st.slider("Number of Clusters (k)", 2, 10, 3)
+
+            kmeans = KMeans(n_clusters=k, random_state=42)
+            labels = kmeans.fit_predict(X_scaled)
+
+            score = silhouette_score(X_scaled, labels)
+            st.write(f"Silhouette Score: {score:.3f}")
+
+            # PCA for visualization
+            pca = PCA(n_components=2)
+            components = pca.fit_transform(X_scaled)
+
+            fig, ax = plt.subplots()
+            ax.scatter(components[:, 0], components[:, 1], c=labels)
+            ax.set_title("K-Means Clustering (PCA View)")
+            st.pyplot(fig)
+
+        # -----------------------
+        # HIERARCHICAL
+        # -----------------------
+        elif model_choice == "Hierarchical Clustering":
+            method = st.selectbox("Linkage Method", ["ward", "complete", "average"])
+
+            linked = linkage(X_scaled, method=method)
+
+            fig, ax = plt.subplots(figsize=(6, 4))
+            dendrogram(linked)
+            ax.set_title("Dendrogram")
+            st.pyplot(fig)
+
+        # -----------------------
+        # PCA
+        # -----------------------
+        elif model_choice == "PCA":
+            n = st.slider("Number of Components", 2, min(10, X_scaled.shape[1]), 2)
+
+            pca = PCA(n_components=n)
+            components = pca.fit_transform(X_scaled)
+
+            explained = pca.explained_variance_ratio_
+            st.write("Explained Variance:", explained)
+
+            fig, ax = plt.subplots()
+            ax.scatter(components[:, 0], components[:, 1])
+            ax.set_title("PCA Projection")
+            st.pyplot(fig)
+
+    
+    
+    if st.checkbox("Show Elbow Plot"):
+    distortions = []
+    K = range(1, 10)
+    for k in K:
+        km = KMeans(n_clusters=k)
+        km.fit(X_scaled)
+        distortions.append(km.inertia_)
+
+    fig, ax = plt.subplots()
+    ax.plot(K, distortions)
+    ax.set_title("Elbow Method")
+    st.pyplot(fig)
