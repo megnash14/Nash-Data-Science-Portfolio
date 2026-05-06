@@ -5,95 +5,162 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
+from sklearn.datasets import load_iris
 from scipy.cluster.hierarchy import dendrogram, linkage
 import matplotlib.pyplot as plt
 
+# Page setup
+st.set_page_config(page_title="Unsupervised Machine Learning App", layout="wide")
+
 st.title("Unsupervised Machine Learning Explorer")
 
-# Upload dataset
-uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+st.markdown("""
+This app allows you to explore a few common unsupervised learning techniques in an interactive way.
+You can upload your own dataset or use a built in example dataset to see how the models behave.
+The goal is to make it easy to experiment with different settings and understand how results change.
+""")
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    st.write("Dataset Preview:")
-    st.dataframe(df.head())
+# Sidebar for data input
+st.sidebar.header("Data Input")
 
-    # Select numeric columns only
-    numeric_df = df.select_dtypes(include=np.number)
+data_option = st.sidebar.radio(
+    "Choose a data source",
+    ["Upload a CSV file", "Use sample dataset"]
+)
 
-    if numeric_df.shape[1] < 2:
-        st.warning("Need at least 2 numeric columns")
+# Load data
+if data_option == "Upload a CSV file":
+    uploaded_file = st.sidebar.file_uploader("Upload a CSV file", type=["csv"])
+
+    if uploaded_file:
+        df = pd.read_csv(uploaded_file)
     else:
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(numeric_df)
+        st.warning("Please upload a file to continue.")
+        st.stop()
 
-        model_choice = st.selectbox(
-            "Choose a Model",
-            ["K-Means", "Hierarchical Clustering", "PCA"]
-        )
+else:
+    iris = load_iris()
+    df = pd.DataFrame(iris.data, columns=iris.feature_names)
+    df["target"] = iris.target
 
-        # -----------------------
-        # K-MEANS
-        # -----------------------
-        if model_choice == "K-Means":
-            k = st.slider("Number of Clusters (k)", 2, 10, 3)
+# Show data
+st.subheader("Dataset preview")
+st.dataframe(df.head())
 
-            kmeans = KMeans(n_clusters=k, random_state=42)
-            labels = kmeans.fit_predict(X_scaled)
+# Preprocessing
+numeric_df = df.select_dtypes(include=np.number)
 
-            score = silhouette_score(X_scaled, labels)
-            st.write(f"Silhouette Score: {score:.3f}")
+if numeric_df.shape[1] < 2:
+    st.error("The dataset must contain at least two numeric columns.")
+    st.stop()
 
-            # PCA for visualization
-            pca = PCA(n_components=2)
-            components = pca.fit_transform(X_scaled)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(numeric_df)
 
-            fig, ax = plt.subplots()
-            ax.scatter(components[:, 0], components[:, 1], c=labels)
-            ax.set_title("K-Means Clustering (PCA View)")
-            st.pyplot(fig)
+# Model selection
+st.sidebar.header("Model Settings")
 
-        # -----------------------
-        # HIERARCHICAL
-        # -----------------------
-        elif model_choice == "Hierarchical Clustering":
-            method = st.selectbox("Linkage Method", ["ward", "complete", "average"])
+model_choice = st.sidebar.selectbox(
+    "Select a method",
+    ["K Means Clustering", "Hierarchical Clustering", "PCA"]
+)
 
-            linked = linkage(X_scaled, method=method)
+# -----------------------------
+# K MEANS
+# -----------------------------
+if model_choice == "K Means Clustering":
+    st.subheader("K Means Clustering")
 
-            fig, ax = plt.subplots(figsize=(6, 4))
-            dendrogram(linked)
-            ax.set_title("Dendrogram")
-            st.pyplot(fig)
+    k = st.sidebar.slider("Number of clusters", 2, 10, 3)
 
-        # -----------------------
-        # PCA
-        # -----------------------
-        elif model_choice == "PCA":
-            n = st.slider("Number of Components", 2, min(10, X_scaled.shape[1]), 2)
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    labels = kmeans.fit_predict(X_scaled)
 
-            pca = PCA(n_components=n)
-            components = pca.fit_transform(X_scaled)
+    score = silhouette_score(X_scaled, labels)
 
-            explained = pca.explained_variance_ratio_
-            st.write("Explained Variance:", explained)
-
-            fig, ax = plt.subplots()
-            ax.scatter(components[:, 0], components[:, 1])
-            ax.set_title("PCA Projection")
-            st.pyplot(fig)
-
+    st.markdown(f"""
+    The silhouette score helps evaluate how well the clusters are separated.
+    A higher score generally indicates that the clusters are more distinct.
     
-    
-    if st.checkbox("Show Elbow Plot"):
-    distortions = []
-    K = range(1, 10)
-    for k in K:
-        km = KMeans(n_clusters=k)
-        km.fit(X_scaled)
-        distortions.append(km.inertia_)
+    Current silhouette score: {score:.3f}
+    """)
+
+    # PCA for visualization
+    pca = PCA(n_components=2)
+    components = pca.fit_transform(X_scaled)
 
     fig, ax = plt.subplots()
-    ax.plot(K, distortions)
-    ax.set_title("Elbow Method")
+    ax.scatter(components[:, 0], components[:, 1], c=labels)
+    ax.set_title("Cluster visualization using two principal components")
+    st.pyplot(fig)
+
+    # Elbow method
+    if st.checkbox("Show elbow plot"):
+        distortions = []
+        K_range = range(1, 10)
+
+        for k_val in K_range:
+            km = KMeans(n_clusters=k_val, random_state=42)
+            km.fit(X_scaled)
+            distortions.append(km.inertia_)
+
+        fig2, ax2 = plt.subplots()
+        ax2.plot(K_range, distortions)
+        ax2.set_title("Elbow method for choosing the number of clusters")
+        ax2.set_xlabel("Number of clusters")
+        ax2.set_ylabel("Inertia")
+        st.pyplot(fig2)
+
+        st.markdown("""
+        The elbow plot helps you decide how many clusters to use.
+        Look for a point where the curve starts to level off.
+        """)
+
+# -----------------------------
+# HIERARCHICAL
+# -----------------------------
+elif model_choice == "Hierarchical Clustering":
+    st.subheader("Hierarchical Clustering")
+
+    method = st.sidebar.selectbox(
+        "Linkage method",
+        ["ward", "complete", "average"]
+    )
+
+    linked = linkage(X_scaled, method=method)
+
+    st.markdown("""
+    Hierarchical clustering builds clusters step by step by merging points together.
+    The dendrogram below shows how observations are grouped at each stage.
+    """)
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    dendrogram(linked)
+    ax.set_title("Dendrogram")
+    st.pyplot(fig)
+
+# -----------------------------
+# PCA
+# -----------------------------
+elif model_choice == "PCA":
+    st.subheader("Principal Component Analysis")
+
+    max_components = min(10, X_scaled.shape[1])
+    n = st.sidebar.slider("Number of components", 2, max_components, 2)
+
+    pca = PCA(n_components=n)
+    components = pca.fit_transform(X_scaled)
+
+    explained = pca.explained_variance_ratio_
+
+    st.markdown("""
+    PCA reduces the number of variables while keeping as much variation in the data as possible.
+    The values below show how much variance is explained by each component.
+    """)
+
+    st.write(explained)
+
+    fig, ax = plt.subplots()
+    ax.scatter(components[:, 0], components[:, 1])
+    ax.set_title("Projection onto the first two principal components")
     st.pyplot(fig)
