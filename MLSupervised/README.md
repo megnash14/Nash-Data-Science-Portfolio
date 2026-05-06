@@ -24,10 +24,10 @@ Supervised Machine Learning interactive dashboard built with **Streamlit** and *
 
 
 ### Streamlit Link:
-https://megnash14-nash-data-science-portfol-supervisedapp-j1tzbg.streamlit.app/
+(https://megnash14-nash-data-science-portfolio-mlsupervisedapp-nil5cf.streamlit.app/)
 
 ### Dataset Link: 
-https://www.kaggle.com/datasets/hassanali789/world-happiness-report-2026-official-rankings
+(https://www.kaggle.com/datasets/hassanali789/world-happiness-report-2026-official-rankings)
 
 ### My Repository Link: 
-https://github.com/megnash14/Nash-Data-Science-Portfolio/tree/main/MLSupervisedApp
+(https://github.com/megnash14/Nash-Data-Science-Portfolio)

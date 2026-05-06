@@ -8,7 +8,7 @@ An interactive dashboard built with **Streamlit** and **Scikit-Learn**. It autom
 
 ![App Screenshot](MLUnsupervised.png)
 
-Featured hierarchial clustering
+Featured here is the Hierarchial Clustering models of the default dataset.
 
 ## Description:
 My Unsupervised ML Modeler is an interactive web application built with Streamlit that enables the process of discovering hidden structures within datasets by automating preprocessing and scaling. The page defaults to a dataset featuring world happiness rankings or provides the opportunity for users to upload their own datasets. Based on the dataset, it includes visualizations of hierarchical clustering, PCA, and K-means, allowing users to easily pivot between the different structures with live updates to the models. This unsupervised machine learning modeling system transforms high-dimensional raw information into understandable visualizations, making it a powerful tool for customer segmentation to anomaly detection.

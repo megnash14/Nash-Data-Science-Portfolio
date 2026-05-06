@@ -27,7 +27,7 @@ if uploaded_file is not None:
 else:
     try:
         # Defaulting to world_happiness.csv
-        df = pd.read_csv("world_happiness.csv")
+        df = pd.read_csv("MLSupervised/world_happiness.csv")
         st.sidebar.info("Using default: 2026 World Happiness Report")
     except FileNotFoundError:
         st.error("Default data not found. Please upload a CSV file.")
