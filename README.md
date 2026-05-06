@@ -10,7 +10,7 @@
 **Basic Streamlit App**
 * A foundational web application demonstrating the integration of Streamlit's core UI components with Pandas to create an interactive data filtering and visualization tool.
 * Streamlit, Python, CSV Ingestion
-* Streamlit Link:(https://megnash14-nash-data-science-portfol-basicapp-j1tzbg.streamlit.app/)
+* Streamlit Link:(https://megnash14-nash-data-science-port-basic-streamlit-appmain-6mg4pm.streamlit.app/)
 
 **Supervised ML Modeler**
 * A predictive modeling application that utilizes the World Happiness dataset to demonstrate regression techniques, including Linear Regression and Random Forest, for forecasting numerical targets
