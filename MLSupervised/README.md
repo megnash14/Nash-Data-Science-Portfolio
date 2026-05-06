@@ -4,6 +4,12 @@ This interactive Streamlit web application is intended to explore regression-bas
 ### TLDR:
 Supervised Machine Learning interactive dashboard built with **Streamlit** and **Scikit-Learn**. It automates data scaling and provides interactive visualizations for **Linear Regression** and **Random Forest**, using the 2026 World Happiness Report as a default benchmark or users' personal datasets.
 
+# Unsupervised Machine Learning Explorer
+
+![App Screenshot](MLSupervisedpic.png)
+
+Featured here is the Linear Regression results of the default dataset.
+
 ## Description:
 * My Supervised ML Modeler is an interactive web application built with Streamlit that enables the process of forecasting numerical targets within datasets by automating the train-test split and model training.
 * The page defaults to a dataset featuring world happiness rankings or provides the opportunity for users to upload their own datasets for custom regression analysis. 
