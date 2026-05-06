@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-# Configure actual streamlit pag
+# Configure actual streamlit page
 st.set_page_config(page_title="Unsupervised ML Explorer", layout="wide")
 
 st.title("Unsupervised Machine Learning Explorer")
@@ -38,7 +38,6 @@ else:
 st.write("### Dataset Preview", df.head())
 
 # Selecting the model features
-# For numerical columns and how to handle potential missing values
 num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
 
 if len(num_cols) < 2:
@@ -52,7 +51,7 @@ selected_cols = st.multiselect(
 )
 
 if len(selected_cols) >= 2:
-    # Clean data by removing rows with missing values for the selected features
+    # Clean data
     X = df[selected_cols].dropna()
     
     if len(X) < 5:
@@ -81,7 +80,6 @@ if len(selected_cols) >= 2:
             score = silhouette_score(X_scaled, clusters)
             st.metric("Silhouette Score", f"{score:.3f}")
             
-            # Scatter Plot
             fig, ax = plt.subplots()
             sns.scatterplot(x=X_scaled[:, 0], y=X_scaled[:, 1], hue=clusters, palette='viridis', ax=ax)
             ax.set_xlabel(f"Scaled {selected_cols[0]}")
@@ -89,7 +87,6 @@ if len(selected_cols) >= 2:
             st.pyplot(fig)
             
         with col2:
-            # Elbow Method Plot
             distortions = []
             K_range = range(1, 11)
             for i in K_range:
@@ -103,6 +100,20 @@ if len(selected_cols) >= 2:
             ax2.set_ylabel('Inertia')
             ax2.set_title('Elbow Method')
             st.pyplot(fig2)
+
+        with st.expander("Understanding K-Means Metrics"):
+            st.markdown("""
+            **What is K-Means?**
+            K-Means is a centroid-based algorithm that partitions data into *k* non-overlapping subgroups. It tries to make the intra-cluster points as similar as possible while keeping the clusters as far apart as possible.
+
+            **The Silhouette Score:**
+            * Ranges from -1 to +1. 
+            * A high score (closer to 1) indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters.
+            
+            **The Elbow Method (Inertia):**
+            * Inertia measures how tightly packed the clusters are (the sum of squared distances to the nearest centroid).
+            * We look for the 'elbow' point where the drop in inertia slows down; this usually indicates the optimal number of clusters.
+            """)
             
     elif algo == "Hierarchical Clustering":
         n_clusters = st.sidebar.slider("Number of Clusters", 2, 10, 3)
@@ -117,6 +128,21 @@ if len(selected_cols) >= 2:
         dendrogram(Z, ax=ax)
         ax.set_title("Hierarchical Clustering Dendrogram")
         st.pyplot(fig)
+
+        with st.expander("Understanding Hierarchical Clustering"):
+            st.markdown("""
+            **What is Hierarchical Clustering?**
+            Unlike K-Means, this method builds a multi-level hierarchy of clusters. We use **Agglomerative** clustering, which is a "bottom-up" approach where each data point starts in its own cluster, and pairs of clusters are merged as one moves up the hierarchy.
+
+            **The Dendrogram:**
+            * A tree-like diagram that records the sequences of merges or splits.
+            * The vertical axis represents the distance or dissimilarity between clusters. The higher the horizontal link, the more dissimilar the clusters being joined are.
+
+            **Linkage Methods:**
+            * **Ward:** Minimizes the variance of clusters being merged.
+            * **Complete:** Uses the maximum distance between points of two clusters.
+            * **Average:** Uses the average distance between all points in two clusters.
+            """)
 
     elif algo == "PCA":
         max_pcs = min(len(selected_cols), 10)
@@ -138,6 +164,19 @@ if len(selected_cols) >= 2:
             fig, ax = plt.subplots()
             sns.scatterplot(data=pca_df, x='PC1', y='PC2')
             st.pyplot(fig)
+
+        with st.expander("Understanding Principal Component Analysis (PCA)"):
+            st.markdown("""
+            **What is PCA?**
+            PCA is a dimensionality reduction technique. It transforms a large set of variables into a smaller one that still contains most of the information (variance) in the large set.
+
+            **Explained Variance Ratio:**
+            * This tells you how much information (mathematically, the variance) is captured by each Principal Component. 
+            * If PC1 and PC2 cover 80% of the variance, you can effectively visualize your entire dataset in 2D without losing significant patterns.
+
+            **2D Projection:**
+            * The scatter plot shows your data transformed into a new coordinate system. This helps identify clusters or trends that were hidden in the original high-dimensional numerical data.
+            """)
 
 else:
     st.warning("Please select at least two numerical columns to begin.")

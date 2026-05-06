@@ -1,5 +1,32 @@
-# For my basic streamlit app, I chose to explore the world happiness scores dataset. I believed that the numerical data would be a good way to showcase sorting and the qualitative data would be a good way to showcase filtering. I downloaded the data, reordered the columns and deleted columns I did not want to include. It provides a tool for those researching global comparisons on a social level to view overall nation happiness levels based on 5 included categories.
+# World Happiness Report Explorer
+This interactive Streamlit web application is designed to explore and filter global happiness data. It allows users to dive into the 2017 World Happiness Report, providing a way to compare how specific factors like GDP, health, and government trust contribute to a nation's overall ranking.
 
-# As a final product, this interactive dashboard serves as a knowledge base for the 2017 World Happiness Report, allowing viewers to go beyond overall happiness rankings to see scores sorted by specific factors. Some key features are the sidebar to filter the dataset by specific regions or countries, allowing for customized stats based on personal interest. Additionally, the dashboard displays the leading nations in six categories: Happiness, GDP, Health, Freedom, Trust (Corruption), and Generosity. With the complete dataset provided below those for further exploration.
+### TLDR:
+An interactive data exploration dashboard built with **Streamlit** and **Pandas**. It features cached data loading for performance and provides dynamic filtering for **Regions** and **Countries**, highlighting top-performing nations across six key happiness metrics.
 
-# To run the app you need to enter this command "streamlit run basic_streamlit_app/main.py" in the terminal where it brings you to the web browser page where it is located. You are then able to select which regions or countries you would like to view and learn the leading countries in the respective categories that contribute to national happiness.
+## Description:
+* My World Happiness Explorer is a specialized data visualization tool that transforms static survey results into an interactive experience through Streamlit's reactive framework.
+* The application utilizes high-performance data caching to ensure seamless filtering across a comprehensive list of global regions and individual countries. 
+* It features a dynamic metrics engine that automatically identifies and displays the top-ranking nations for categories such as GDP per capita, life expectancy, and social freedom based on the user's current selection.
+* By providing a clean, sortable Dataset Explorer and organized metrics cards, this system allows researchers and enthusiasts to quickly identify regional trends and outliers in global well-being.
+
+## Skills & Technologies Used:
+* **Page Framework** 
+* **Streamlit** Layouts, Sidebars, Widgets, Caching, Metrics 
+* **Data Manipulation** 
+* **Pandas** Data Filtering, Sorting, Type Selection
+* **Performance Optimization** 
+* **Logic & Formatting** 
+* **Python** Dictionary Mapping, Dynamic String Formatting 
+* **Visualization** 
+* **St.dataframe**, **St.metric** interactive components 
+
+
+### Streamlit Link:
+(https://megnash14-nash-data-science-portfol-basicapp-j1tzbg.streamlit.app/)
+
+### Dataset Link: 
+(https://www.kaggle.com/datasets/unsurprisingly-link-here/world-happiness-report-2017)
+
+### My Repository Link: 
+(https://github.com/megnash14/Nash-Data-Science-Portfolio/tree/main/basic_streamlit_app)
