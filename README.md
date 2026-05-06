@@ -22,15 +22,29 @@
 * Scikit-Learn, PCA, Streamlit
 * Streamlit Link: (https://megnash14-nash-data-science-portfol-mlunsupervisedappapp-j1tzbg.streamlit.app/)
 
-## Project Descriptions 
 
-* This comprehensive semester portfolio represents a cumulative demonstration of data science proficiency through a series of increasingly complex technical projects and professional updates. My GitHub profile has been meticulously updated to include a formal introduction, a detailed overview of current projects, and a clear outline of my technical skills and long term professional goals. To ensure the repository maintains a polished and professional aesthetic suitable for potential collaborators or employers, I have integrated a professional profile picture and organized contact links for streamlined communication.
+### Data Science Portfolio
+This comprehensive portfolio represents a cumulative demonstration of data science proficiency through a series of increasingly complex technical projects. Each entry highlights a progression from data visualization and engineering to advanced machine learning. My GitHub repository has been meticulously curated to include a formal introduction, a detailed technical skill set, and long-term professional goals, all organized within a polished interface designed for collaboration and recruitment.
 
-* The initial phase of this portfolio involved the development of an interactive dashboard designed to serve as a robust knowledge base for the 2017 World Happiness Report. This application enables viewers to move beyond static happiness rankings by exploring granular scores across six critical dimensions including Happiness, Economy GDP per Capita, Health Life Expectancy, Freedom, Trust Government Corruption, and Generosity. The user experience is enhanced by a dynamic sidebar containing regional and country level filters alongside a highlights section that identifies the leading nation in each performance category.
+## Tidy Data Analysis: Global Well-being Analytics Dashboard
+* Objective: Developed an interactive dashboard to serve as a robust knowledge base for the 2017 World Happiness Report, moving beyond static rankings to provide granular insights.
+* Technical Highlights: Engineered a dynamic user interface featuring regional and country-level filters. The application allows users to dissect happiness scores across six critical dimensions: GDP per Capita, Life Expectancy, Freedom, Trust/Government Corruption, and Generosity.
+* Outcome: Integrated a "Highlights" engine that automatically identifies leading nations in each category, providing an immediate, data-driven summary of global performance.
 
-* For the second major portfolio update, I conducted an in depth analysis of the 2008 Olympic Medalists by cleaning and structuring a multifaceted knowledge base. This project allows viewers to interact with the data through specific lenses such as gender, sport, and medal type rather than viewing a simple list of winners. A significant portion of this project focused on data transformation where I combined disparate columns before redistributing them into a more organized and logical state. The final product incorporates statistical visualizations including comprehensive graphs that compare medal distributions by gender and a ranking of the top ten sports by total medal count.
+## Basic Streamlit App: 2008 Olympic Medalist Data Transformation
+* Objective: Conducted an in-depth analysis and structural overhaul of the 2008 Olympic Medalist dataset to enable multi-faceted data exploration.
+* Technical Highlights: Performed significant data wrangling, involving the merging of disparate columns and the redistribution of variables into a more logical, query-ready state.
+* Analytics: Developed statistical visualizations, including gender-based medal distribution graphs and a "Top Ten" ranking of sports by total medal count, providing clarity on athletic performance trends.
 
-* The third and most advanced iteration of the portfolio features a machine learning application developed using the Streamlit framework which empowers users to upload custom datasets and experiment with various supervised learning algorithms. The platform provides an interface for users to select target variables and choose between diverse modeling approaches such as Logistic Regression, K Nearest Neighbors, and Decision Trees. By utilizing interactive sliders to adjust hyperparameters, users can observe the immediate impact of these changes on model performance and accuracy. The application is structured with a distinct sidebar for user controls and a primary display area that renders dataset results, predictive accuracy metrics, and specific model details.
+## Supervised ML Modeler: Interactive Supervised Learning Platform
+* Objective: Built a high-level machine learning application using the Streamlit framework, allowing users to experiment with predictive modeling without writing code.
+* Technical Highlights: The platform supports custom dataset uploads and provides a suite of supervised algorithms, including Logistic Regression, K-Nearest Neighbors (KNN), and Decision Trees.
+* Key Features: Implemented interactive hyperparameter sliders, allowing for real-time tuning and observation of model accuracy. The UI features a dedicated control sidebar and a primary display for rendering dataset results and performance metrics.
+
+## Unsupervised ML Explorer: Unsupervised Pattern Recognition & Clustering
+* Objective: Explored hidden structures within unlabelled data to identify natural groupings and underlying patterns using unsupervised learning techniques.
+* Technical Highlights: Implemented K-Means Clustering and Principal Component Analysis (PCA) to handle high-dimensional data. This project focused on the "cold start" problem—finding insights in data where the target variable is unknown.
+* Outcome: Successfully utilized the Elbow Method and Silhouette Scores to determine optimal cluster counts, resulting in a clear segmentation of the data that revealed distinct, actionable personas and trends within the dataset.
 
 ## Technical Skills Summary
 * **Languages:** Python (Pandas, NumPy, Scikit-Learn, SciPy)
