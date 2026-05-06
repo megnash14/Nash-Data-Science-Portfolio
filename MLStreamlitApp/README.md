@@ -4,7 +4,7 @@
 This application was developed using the Streamlit framework to provide users with an environment for interactive graphs and modeling. By allowing users to upload their own datasets and change various  algorithms in real time, the project serves as a bridge between machine learning concepts and application. The primary objective of this project is to demonstrate the principles of applied machine learning through an interface that shows how specific model selections and hyperparameter adjustments influence the final outcomes.
 
 ## Live App
-Access the application locally at http://localhost:8501
+Access the application locally at https://megnash14-nash-data-science-portfolio-mlstreamlitappapp-cmzfme.streamlit.app/
 
 ## Key Features
 
