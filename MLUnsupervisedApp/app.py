@@ -9,194 +9,162 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-# Configure actual streamlit page
+# Modular Functions of the Model
+
+@st.cache_data
+def load_and_preprocess(df, selected_cols):
+    """
+    Cleans and scales data. Standard scaling is essential for distance-based 
+    models like K-Means and Hierarchical clustering to ensure all features
+    contribute equally to the distance calculations.
+    """
+    X_clean = df[selected_cols].dropna()
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X_clean)
+    return X_clean, X_scaled
+
+def get_pca_2d(X_scaled):
+    """
+    Reduces dataset dimensions to 2 Principal Components for visualization.
+    This provides a consistent 2D coordinate system for plotting clusters.
+    """
+    pca = PCA(n_components=2)
+    return pca.fit_transform(X_scaled)
+
+# Configuring the streamlit page
 st.set_page_config(page_title="Unsupervised ML Explorer", layout="wide")
 
 st.title("Unsupervised Machine Learning Explorer")
-st.markdown("""
-Explore **Clustering** and **Dimensionality Reduction** interactively. 
-Upload your own data or use the default World Happiness dataset.
-""")
+st.write("Analyze hidden patterns and structures within your data using Clustering and PCA.")
 
-# 1. DATA SOURCE SELECTION
+# Importing and previewing the raw data
 st.sidebar.header("1. Data Source")
-uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
+uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 
-if uploaded_file is not None:
+if uploaded_file:
     df = pd.read_csv(uploaded_file)
-    st.sidebar.success("Loaded: User Dataset")
 else:
     try:
-        # Default path - adjust if your folder structure differs
         df = pd.read_csv("MLUnsupervisedApp/world_happiness.csv")
-        st.sidebar.info("Using default: World Happiness Dataset")
     except FileNotFoundError:
-        st.error("Error: 'world_happiness.csv' not found and no file uploaded.")
+        st.error("Default data not found. Please upload a CSV.")
         st.stop()
 
-# Display Preview
-st.write("### Dataset Preview", df.head())
+# Data preview
+with st.expander("Dataset Preview and Raw Data", expanded=True):
+    st.write(df.head(10))
+    st.info(f"Dataset contains {df.shape[0]} rows and {df.shape[1]} columns.")
 
-# 2. FEATURE SELECTION
+# Configuring the models
 num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-
-if len(num_cols) < 2:
-    st.error("Dataset needs at least 2 numerical columns for unsupervised learning.")
-    st.stop()
-
-selected_cols = st.multiselect(
-    "Select numerical features for modeling", 
-    num_cols, 
-    default=num_cols[:min(4, len(num_cols))]
-)
+selected_cols = st.multiselect("Select numerical features for modeling:", num_cols, default=num_cols[:4])
 
 if len(selected_cols) >= 2:
-    # Clean and Scale Data
-    X = df[selected_cols].dropna()
+    X_raw, X_scaled = load_and_preprocess(df, selected_cols)
+    X_pca = get_pca_2d(X_scaled)
     
-    if len(X) < 5:
-        st.warning("Not enough data rows after removing missing values.")
-        st.stop()
+    st.sidebar.header("2. Model Parameters")
+    algo = st.sidebar.selectbox("Choose Algorithm", ["K-Means", "Hierarchical Clustering", "PCA"])
 
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    # 3. ALGORITHM CONFIGURATION
-    st.sidebar.header("2. Configure Model")
-    algo = st.sidebar.selectbox(
-        "Select Algorithm", 
-        ["K-Means", "Hierarchical Clustering", "PCA"]
-    )
-    
-    # --- K-MEANS LOGIC ---
+    # K Means section
     if algo == "K-Means":
         k = st.sidebar.slider("Number of Clusters (k)", 2, 10, 3)
         model = KMeans(n_clusters=k, random_state=42, n_init=10)
         clusters = model.fit_predict(X_scaled)
         
-        # PCA for dynamic 2D visualization
-        pca_2d = PCA(n_components=2)
-        X_pca = pca_2d.fit_transform(X_scaled)
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write(f"### K-Means Results (k={k})")
-            score = silhouette_score(X_scaled, clusters)
-            st.metric("Silhouette Score", f"{score:.3f}")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.subheader("Cluster Visualization")
+            fig_km, ax_km = plt.subplots()
+            sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=clusters, palette='viridis', ax=ax_km)
+            ax_km.set_title(f"K-Means (k={k}) PCA Projection")
+            st.pyplot(fig_km)
             
-            fig, ax = plt.subplots()
-            sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=clusters, palette='viridis', ax=ax)
-            ax.set_title("Cluster Visualization (PCA Projection)")
-            ax.set_xlabel("Principal Component 1")
-            ax.set_ylabel("Principal Component 2")
-            st.pyplot(fig)
-            
-        with col2:
-            distortions = []
-            K_range = range(1, 11)
-            for i in K_range:
-                km = KMeans(n_clusters=i, random_state=42, n_init=10)
-                km.fit(X_scaled)
-                distortions.append(km.inertia_)
-            
-            fig2, ax2 = plt.subplots()
-            ax2.plot(K_range, distortions, 'bx-')
-            ax2.set_xlabel('Number of clusters (k)')
-            ax2.set_ylabel('Inertia')
-            ax2.set_title('Elbow Method')
-            st.pyplot(fig2)
+        with c2:
+            st.subheader("Model Performance")
+            st.metric("Silhouette Score", f"{silhouette_score(X_scaled, clusters):.3f}")
+            inertias = [KMeans(n_clusters=i, n_init=10, random_state=42).fit(X_scaled).inertia_ for i in range(1, 11)]
+            fig_el, ax_el = plt.subplots()
+            ax_el.plot(range(1, 11), inertias, 'bx-')
+            ax_el.set_title("Elbow Method Plot")
+            st.pyplot(fig_el)
 
-        with st.expander("Understanding K-Means Metrics"):
+        with st.expander("Interpretation of K-Means Metrics and Benchmarks"):
             st.markdown("""
-            **What is K-Means?**
-            K-Means is a centroid-based algorithm that partitions data into *k* non-overlapping subgroups. It tries to make the intra-cluster points as similar as possible while keeping the clusters as far apart as possible.
+            **Silhouette Score Benchmarks:**
+            * **0.71 - 1.0:** Excellent separation; a strong structure has been found.
+            * **0.51 - 0.70:** Reasonable separation; the structure is likely valid.
+            * **0.26 - 0.50:** Weak separation; the clusters are likely overlapping or noisy.
+            * **Less than 0.25:** No substantial structure found.
 
-            **The Silhouette Score:**
-            * Ranges from -1 to +1. 
-            * A high score (closer to 1) indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters.
-            
-            **The Elbow Method (Inertia):**
-            * Inertia measures how tightly packed the clusters are (the sum of squared distances to the nearest centroid).
-            * We look for the 'elbow' point where the drop in inertia slows down; this usually indicates the optimal number of clusters.
+            **Inertia and the Elbow Method:**
+            Inertia measures the sum of squared distances of samples to their closest cluster center. While lower inertia is better, it always decreases as K increases. The **Elbow Point** is the specific value of K where the rate of decrease shifts significantly, representing the optimal balance between cluster tightness and model complexity.
             """)
-            
-    # --- HIERARCHICAL LOGIC ---
+
+    # Hierarchial section
     elif algo == "Hierarchical Clustering":
         n_clusters = st.sidebar.slider("Number of Clusters", 2, 10, 3)
-        linkage_type = st.sidebar.selectbox("Linkage Method", ["ward", "complete", "average"])
-        
-        model = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage_type)
+        link_type = st.sidebar.selectbox("Linkage Method", ["ward", "complete", "average"])
+        model = AgglomerativeClustering(n_clusters=n_clusters, linkage=link_type)
         clusters = model.fit_predict(X_scaled)
         
-        # PCA for dynamic 2D visualization
-        pca_2d = PCA(n_components=2)
-        X_pca = pca_2d.fit_transform(X_scaled)
+        c1, c2 = st.columns(2)
+        with c1:
+            st.subheader("Dendrogram")
+            Z = linkage(X_scaled, method=link_type)
+            fig_d, ax_d = plt.subplots()
+            dendrogram(Z, ax=ax_d, truncate_mode='lastp', p=12)
+            ax_d.set_title("Hierarchical Relationship Tree")
+            st.pyplot(fig_d)
+        with c2:
+            st.subheader("Cluster Projection")
+            fig_h, ax_h = plt.subplots()
+            sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=clusters, palette='magma', ax=ax_h)
+            st.pyplot(fig_h)
 
-        st.write("### Hierarchical Clustering Visuals")
-        g1, g2 = st.columns(2)
-        
-        with g1:
-            st.write("#### Cluster Projection (PCA)")
-            fig_scat, ax_scat = plt.subplots()
-            sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=clusters, palette='magma', ax=ax_scat)
-            st.pyplot(fig_scat)
-
-        with g2:
-            st.write("#### Dendrogram")
-            Z = linkage(X_scaled, method=linkage_type)
-            fig_den, ax_den = plt.subplots()
-            dendrogram(Z, ax=ax_den, truncate_mode='lastp', p=12) # Truncated for readability
-            st.pyplot(fig_den)
-
-        with st.expander("Understanding Hierarchical Clustering"):
+        with st.expander("Interpretation of Hierarchical Clustering"):
             st.markdown("""
-            **What is Hierarchical Clustering?**
-            Unlike K-Means, this method builds a multi-level hierarchy of clusters. We use **Agglomerative** clustering, which is a "bottom-up" approach where each data point starts in its own cluster, and pairs of clusters are merged as one moves up the hierarchy.
+            **Dendrogram Analysis:**
+            The dendrogram visualizes the sequence of cluster merges. The vertical axis represents the **Euclidean distance** (or dissimilarity) between clusters. By observing where the vertical lines are longest, you can identify the most distinct groupings in the data.
 
-            **The Dendrogram:**
-            * A tree-like diagram that records the sequences of merges or splits.
-            * The vertical axis represents the distance or dissimilarity between clusters. 
-
-            **Linkage Methods:**
-            * **Ward:** Minimizes the variance of clusters being merged.
-            * **Complete/Average:** Uses the maximum or average distance between points of two clusters.
+            **Linkage Method Benchmarks:**
+            * **Ward Linkage:** Generally the most effective for creating clusters of similar size by minimizing variance.
+            * **Complete Linkage:** Better at finding clusters with clearly defined boundaries (sensitive to outliers).
+            * **Average Linkage:** A compromise that balances cluster size and boundary definitions.
             """)
 
-    # --- PCA LOGIC ---
+    # PCA section
     elif algo == "PCA":
-        max_pcs = min(len(selected_cols), 10)
-        n_components = st.sidebar.slider("PCA Components", 2, max_pcs, 2)
+        n_comp = st.sidebar.slider("PCA Components", 2, len(selected_cols), 2)
+        pca_model = PCA(n_components=n_comp)
+        pca_model.fit(X_scaled)
         
-        pca = PCA(n_components=n_components)
-        components = pca.fit_transform(X_scaled)
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write(f"### PCA - Explained Variance")
-            exp_var = pca.explained_variance_ratio_
-            st.bar_chart(exp_var)
-            st.write(f"**Total Explained Variance:** {sum(exp_var):.2%}")
-            
-        with col2:
-            st.write("### 2D Projection")
-            pca_df = pd.DataFrame(data=components[:, :2], columns=['PC1', 'PC2'])
-            fig, ax = plt.subplots()
-            sns.scatterplot(data=pca_df, x='PC1', y='PC2', alpha=0.7)
-            ax.set_title("Data Structure in PCA Space")
-            st.pyplot(fig)
+        st.subheader("Dimensionality Reduction Analysis")
+        st.write(f"**Total Variance Explained:** {sum(pca_model.explained_variance_ratio_):.2%}")
+        st.bar_chart(pca_model.explained_variance_ratio_)
 
-        with st.expander("Understanding Principal Component Analysis (PCA)"):
+        with st.expander("Interpretation of PCA Results and Variance"):
             st.markdown("""
-            **What is PCA?**
-            PCA is a dimensionality reduction technique. It transforms a large set of variables into a smaller one that still contains most of the information (variance) in the large set.
+            **Explained Variance Benchmarks:**
+            In PCA, we aim to retain as much information as possible while reducing the number of features.
+            * **80% to 90% Variance:** High-quality reduction; most of the original data's patterns are preserved.
+            * **70% Variance:** Acceptable for visualization and general pattern recognition.
+            * **Less than 50% Variance:** Significant data loss; the 2D projection may not be a reliable representation of the true data structure.
 
-            **Explained Variance Ratio:**
-            * This tells you how much information (variance) is captured by each Principal Component. 
-            * If your top components cover ~80% variance, your 2D/3D visualization is highly representative of the original data.
-
-            **2D Projection:**
-            * The scatter plot shows your data transformed into a new coordinate system (PC1 vs PC2). This helps identify "clouds" or trends that were hidden in high-dimensional space.
+            **Component Significance:**
+            The first component (PC1) always captures the maximum possible variance in the dataset. Subsequent components capture the remaining variance in descending order.
             """)
+
+    # Export results
+    st.divider()
+    if algo != "PCA":
+        export_df = X_raw.copy()
+        export_df['Cluster_ID'] = clusters
+        st.subheader("Final Clustered Data")
+        st.dataframe(export_df.head(), use_container_width=True)
+        
+        csv = export_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Clustered Dataset", csv, "results.csv", "text/csv")
 
 else:
-    st.info("Please select at least two numerical columns in the main area to begin.")
+    st.info("Please select at least two features in the multiselect box to begin modeling.")
