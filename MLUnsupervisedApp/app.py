@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-# Page Configuration
+# Configure actual streamlit pag
 st.set_page_config(page_title="Unsupervised ML Explorer", layout="wide")
 
 st.title("Unsupervised Machine Learning Explorer")
@@ -18,7 +18,7 @@ Explore **Clustering** and **Dimensionality Reduction** interactively.
 Upload your own data or use the default World Happiness dataset.
 """)
 
-# --- 1. DATA SOURCE SELECTION ---
+# Selecting what data source to use
 st.sidebar.header("1. Data Source")
 uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
 
@@ -27,7 +27,7 @@ if uploaded_file is not None:
     st.sidebar.success("Loaded: User Dataset")
 else:
     try:
-        # Defaults to the world_happiness.csv in your folder
+        # defaulting the site to the world happiness csv
         df = pd.read_csv("world_happiness.csv")
         st.sidebar.info("Using default: World Happiness Dataset")
     except FileNotFoundError:
@@ -37,8 +37,8 @@ else:
 # Display Preview
 st.write("### Dataset Preview", df.head())
 
-# --- 2. FEATURE SELECTION ---
-# Get numerical columns and handle potential missing values
+# Selecting the model features
+# For numerical columns and how to handle potential missing values
 num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
 
 if len(num_cols) < 2:
@@ -52,18 +52,18 @@ selected_cols = st.multiselect(
 )
 
 if len(selected_cols) >= 2:
-    # Clean data: Remove rows with missing values for the selected features
+    # Clean data by removing rows with missing values for the selected features
     X = df[selected_cols].dropna()
     
     if len(X) < 5:
         st.warning("Not enough data rows after removing missing values.")
         st.stop()
 
-    # Scaling is crucial for distance-based ML
+    # Scaling
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     
-    # --- 3. ALGORITHM CONFIGURATION ---
+    # Configuring the algorithm
     st.sidebar.header("2. Configure Model")
     algo = st.sidebar.selectbox(
         "Select Algorithm", 
@@ -81,7 +81,7 @@ if len(selected_cols) >= 2:
             score = silhouette_score(X_scaled, clusters)
             st.metric("Silhouette Score", f"{score:.3f}")
             
-            # Scatter Plot of first two selected features
+            # Scatter Plot
             fig, ax = plt.subplots()
             sns.scatterplot(x=X_scaled[:, 0], y=X_scaled[:, 1], hue=clusters, palette='viridis', ax=ax)
             ax.set_xlabel(f"Scaled {selected_cols[0]}")

@@ -17,7 +17,7 @@ This application builds regression models with the default graphs showing predic
 Adjust the settings in the sidebar to see the model and graphs update automatically as you upload yourw own.
 """)
 
-# 1. Data Loading
+# First load the data from default or have user uplaod their own
 st.sidebar.header("1. Data Input")
 uploaded_file = st.sidebar.file_uploader("Upload a CSV file", type=["csv"])
 
@@ -33,10 +33,10 @@ else:
         st.error("Default data not found. Please upload a CSV file.")
         st.stop()
 
-# 2. Data Configuration
+#  Configure the data header
 st.sidebar.header("2. Data Configuration")
 
-# Algorithm Selection (Moved to the top of Configuration)
+# Users can select algorithm
 algo = st.sidebar.selectbox("Select Model Algorithm", ["Linear Regression", "Random Forest"])
 
 num_cols = df.select_dtypes(include=['float64', 'int64']).columns.tolist()
@@ -57,11 +57,11 @@ feature_vars = st.sidebar.multiselect(
     default=[c for c in num_cols if c != target_var][:4]
 )
 
-# 3. Model Hyperparameters
+# Parameters for the model
 st.sidebar.header("3. Model Hyperparameters")
 test_ratio = st.sidebar.slider("Test Set Size (%)", 10, 50, 20)
 
-# Random Forest specific settings
+# Random Forest settings
 if algo == "Random Forest":
     n_trees = st.sidebar.slider("Number of Trees", 10, 200, 100)
     tree_depth = st.sidebar.slider("Max Tree Depth", 1, 20, 5)
@@ -70,8 +70,8 @@ if algo == "Random Forest":
 with st.expander("Explore Raw Data"):
     st.write(df.head())
 
-# 4. Execution Logic
-# Runs automatically when any changes to the sidebar
+# Actual Model logic
+# Runs automatically when any changes are made to the sidebar
 if target_var and feature_vars:
     # Data Cleaning
     model_df = df[feature_vars + [target_var]].dropna()
