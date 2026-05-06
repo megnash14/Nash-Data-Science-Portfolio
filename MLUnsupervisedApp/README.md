@@ -34,9 +34,11 @@ My Unsupervised ML Modeler is an interactive web application built with Streamli
    cd Nash-Data-Science-Portfolio/MLUnsupervisedApp
 2. **Install Dependencies:**
 Ensure you have Python installed, then run the following command to install the required libraries
+     ```bash
     pip install streamlit pandas numpy matplotlib seaborn scikit-learn scipy
 3. **Run the Application:**
     Execute the Streamlit command to launch the dashboard in your local browser:
+     ```bash
     streamlit run app.py
 
 Streamlit Link:
