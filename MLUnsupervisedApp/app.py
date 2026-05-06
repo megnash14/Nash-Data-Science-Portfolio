@@ -28,7 +28,7 @@ if uploaded_file is not None:
 else:
     try:
         # defaulting the site to the world happiness csv
-        df = pd.read_csv("world_happiness.csv")
+        df = pd.read_csv("MLUnsupervisedApp/world_happiness.csv")
         st.sidebar.info("Using default: World Happiness Dataset")
     except FileNotFoundError:
         st.error("Error: 'world_happiness.csv' not found and no file uploaded.")
