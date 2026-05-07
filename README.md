@@ -51,4 +51,3 @@ This comprehensive portfolio represents a cumulative demonstration of data scien
 * **Languages:** Python (Pandas, NumPy, Scikit-Learn, SciPy)
 * **Visuals:** Matplotlib, Seaborn, Plotly
 * **Deployment:** Streamlit Cloud, GitHub
-* **Mathematics:** Descriptive Statistics, Linear Algebra (PCA), Euclidean Distance Metrics
